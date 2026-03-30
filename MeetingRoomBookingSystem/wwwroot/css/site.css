@@ -1,0 +1,22 @@
+/* Global Styles */
+body {
+    padding-top: 80px;
+    background-color: #f8f9fa;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Card Hover Effects */
+.card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+}
+
+/* Ensure navbar logo stands out */
+.navbar-brand {
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}

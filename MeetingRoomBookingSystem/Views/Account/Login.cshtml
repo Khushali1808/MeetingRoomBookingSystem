@@ -1,0 +1,41 @@
+@model MeetingRoomBookingSystem.Controllers.LoginViewModel
+@{
+    ViewData["Title"] = "Log in";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-5">
+        <div class="text-center mt-5 mb-4">
+            <div style="font-size: 3rem;">🔐</div>
+            <h2 class="fw-bold mt-2">Welcome Back</h2>
+            <p class="text-muted">Sign in to manage your bookings</p>
+        </div>
+        <div class="card border-0 shadow-sm" style="border-radius: 20px;">
+            <div class="card-body p-4 p-md-5">
+                <form id="account" method="post" asp-controller="Account" asp-action="Login">
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger rounded-3"></div>
+                    <div class="mb-4">
+                        <label asp-for="Email" class="form-label fw-semibold"><i class="bi bi-envelope"></i> Email</label>
+                        <input asp-for="Email" class="form-control form-control-lg" placeholder="you@example.com" />
+                        <span asp-validation-for="Email" class="text-danger small"></span>
+                    </div>
+                    <div class="mb-4">
+                        <label asp-for="Password" class="form-label fw-semibold"><i class="bi bi-lock"></i> Password</label>
+                        <input asp-for="Password" class="form-control form-control-lg" placeholder="••••••" />
+                        <span asp-validation-for="Password" class="text-danger small"></span>
+                    </div>
+                    <div class="mb-4 form-check">
+                        <input class="form-check-input" asp-for="RememberMe" />
+                        <label class="form-check-label" asp-for="RememberMe">Remember me</label>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-lg w-100 rounded-pill fw-bold shadow">
+                        <i class="bi bi-box-arrow-in-right"></i> Log In
+                    </button>
+                </form>
+                <div class="text-center mt-4">
+                    <p class="text-muted mb-0">Don't have an account? <a asp-controller="Account" asp-action="Register" class="fw-bold text-decoration-none">Register</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

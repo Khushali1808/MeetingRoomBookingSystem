@@ -1,0 +1,93 @@
+@model IEnumerable<MeetingRoomBookingSystem.Models.Room>
+
+@{
+    ViewData["Title"] = "Available Rooms";
+    var gradients = new[] {
+        "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+        "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)",
+        "linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)",
+        "linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)",
+        "linear-gradient(135deg, #fa709a 0%, #fee140 100%)",
+        "linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%)"
+    };
+    int idx = 0;
+}
+
+<!-- Hero Section -->
+<div class="text-center mb-5 mt-4">
+    <div class="mb-3" style="font-size: 3.5rem;">📅</div>
+    <h1 class="display-4 fw-bold mb-3" style="letter-spacing: -1px;">Book Your Perfect <span style="background: linear-gradient(135deg, #667eea, #764ba2); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Meeting Space</span></h1>
+    <p class="lead text-muted mx-auto" style="max-width: 600px;">A smart solution for preventing double bookings and managing office resources seamlessly.</p>
+    @if (User.Identity?.IsAuthenticated != true)
+    {
+        <div class="mt-4 d-flex justify-content-center gap-3">
+            <a asp-controller="Account" asp-action="Register" class="btn btn-primary btn-lg rounded-pill px-5 shadow fw-bold">
+                <i class="bi bi-rocket-takeoff"></i> Get Started
+            </a>
+            <a asp-controller="Account" asp-action="Login" class="btn btn-outline-secondary btn-lg rounded-pill px-5 fw-bold">
+                <i class="bi bi-box-arrow-in-right"></i> Login
+            </a>
+        </div>
+    }
+</div>
+
+<!-- Room Cards -->
+<div class="row g-4 mb-5">
+    @foreach (var item in Model)
+    {
+        var gradient = gradients[idx % gradients.Length];
+        idx++;
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 border-0 overflow-hidden" style="border-radius: 20px;">
+                <div class="position-relative" style="background: @gradient; padding: 2rem 1.5rem;">
+                    <h5 class="text-white fw-bold mb-0">@item.RoomName</h5>
+                </div>
+                <div class="card-body d-flex flex-column p-4">
+                    <div class="mb-3">
+                        <p class="mb-2"><i class="bi bi-people-fill text-primary"></i> <strong>Capacity:</strong> @item.Capacity people</p>
+                        <p class="mb-0"><i class="bi bi-geo-alt-fill text-danger"></i> <strong>Location:</strong> @item.Location</p>
+                    </div>
+                    <div class="mt-auto">
+                        <a asp-controller="Booking" asp-action="Create" asp-route-roomId="@item.RoomId"
+                           class="btn btn-primary w-100 rounded-pill shadow-sm">
+                            <i class="bi bi-calendar-plus"></i> Book Now
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@if (!Model.Any())
+{
+    <div class="text-center py-5">
+        <div style="font-size: 5rem; opacity: 0.15;"><i class="bi bi-building-slash"></i></div>
+        <h4 class="text-muted mt-3">No rooms available at the moment</h4>
+    </div>
+}
+
+<!-- Feature Highlights -->
+<div class="row g-4 mt-3 mb-5">
+    <div class="col-md-4">
+        <div class="text-center p-4">
+            <div class="mb-3" style="font-size: 2.5rem;"><i class="bi bi-lightning-charge-fill text-warning"></i></div>
+            <h5 class="fw-bold">Instant Booking</h5>
+            <p class="text-muted small">Book rooms in seconds with our streamlined interface.</p>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="text-center p-4">
+            <div class="mb-3" style="font-size: 2.5rem;"><i class="bi bi-shield-check text-success"></i></div>
+            <h5 class="fw-bold">Smart Conflict Checks</h5>
+            <p class="text-muted small">No double bookings — real-time conflict detection.</p>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="text-center p-4">
+            <div class="mb-3" style="font-size: 2.5rem;"><i class="bi bi-qr-code-scan text-primary"></i></div>
+            <h5 class="fw-bold">QR Code Check-In</h5>
+            <p class="text-muted small">Scan and check in when you arrive at the room.</p>
+        </div>
+    </div>
+</div>

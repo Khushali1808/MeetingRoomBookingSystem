@@ -1,0 +1,120 @@
+@* @model MeetingRoomBookingSystem.Models.Booking
+@{
+    ViewData["Title"] = "Book a Room";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card mt-4 shadow border-primary">
+            <div class="card-header bg-primary text-white">
+                <h3 class="mb-0 text-center"><i class="bi bi-calendar-plus"></i> Request Booking</h3>
+            </div>
+            <div class="card-body">
+                <form asp-action="Create">
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                    <div class="row">
+                        <div class="col-md-12 mb-3">
+                            <label asp-for="RoomId" class="form-label fw-bold">Select Room</label>
+                            <select asp-for="RoomId" class="form-select" asp-items="ViewBag.RoomId"></select>
+                            <span asp-validation-for="RoomId" class="text-danger"></span>
+                        </div>
+                        <a href="c:\users\jeet\.gemini\antigravity\scratch\meetingroombookingsystem\views\booking\create.cshtml">c:\users\jeet\.gemini\antigravity\scratch\meetingroombookingsystem\views\booking\create.cshtml</a>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12 mb-3">
+                            <label asp-for="Date" class="form-label fw-bold"></label>
+                            <input asp-for="Date" class="form-control form-control-lg" type="date" />
+                            <span asp-validation-for="Date" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="StartTime" class="form-label fw-bold">From Time</label>
+                            <input asp-for="StartTime" class="form-control time-input" type="time" />
+                            <span asp-validation-for="StartTime" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="EndTime" class="form-label fw-bold">To Time</label>
+                            <input asp-for="EndTime" class="form-control time-input" type="time" />
+                            <span asp-validation-for="EndTime" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between mt-4">
+                        <a asp-action="MyBookings" class="btn btn-outline-secondary">Cancel</a>
+                        <button type="submit" class="btn btn-primary px-4 fw-bold shadow-sm">Confirm Booking</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+} *@
+@model MeetingRoomBookingSystem.Models.Booking
+
+@{
+    ViewData["Title"] = "Book Room";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+
+        <div class="card mt-4 shadow-sm border-primary">
+            <div class="card-header bg-primary text-white">
+                <h3 class="mb-0">Book Meeting Room</h3>
+            </div>
+
+            <div class="card-body">
+
+                <form asp-action="Create" method="post">
+
+                    <div asp-validation-summary="All" class="text-danger"></div>
+
+                    <div class="mb-3">
+                        <label asp-for="RoomId" class="form-label fw-bold"></label>
+                        <select asp-for="RoomId"
+                                class="form-control"
+                                asp-items="ViewBag.RoomId">
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Date" class="form-label fw-bold"></label>
+                        <input asp-for="Date" type="date" class="form-control" min="@DateTime.Today.ToString("yyyy-MM-dd")" max="@DateTime.Today.AddDays(14).ToString("yyyy-MM-dd")" />
+                        <span asp-validation-for="Date" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="StartTime" class="form-label fw-bold"></label>
+                        <input asp-for="StartTime" type="time" class="form-control" />
+                        <span asp-validation-for="StartTime" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="EndTime" class="form-label fw-bold"></label>
+                        <input asp-for="EndTime" type="time" class="form-control" />
+                        <span asp-validation-for="EndTime" class="text-danger"></span>
+                    </div>
+
+                    <div class="d-flex justify-content-between mt-4">
+                        <a asp-action="MyBookings" class="btn btn-secondary">Back</a>
+                        <button type="submit" class="btn btn-primary">Book Room</button>
+                    </div>
+
+                </form>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

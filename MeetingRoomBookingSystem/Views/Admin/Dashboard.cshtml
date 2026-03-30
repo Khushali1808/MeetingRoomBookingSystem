@@ -1,0 +1,258 @@
+@model IEnumerable<MeetingRoomBookingSystem.Models.Booking>
+@{
+    ViewData["Title"] = "Admin Dashboard";
+}
+
+<div class="container-fluid mt-4">
+    <div class="row align-items-center mb-5">
+        <div class="col-md-8">
+            <h1 class="display-5 fw-bold"><i class="bi bi-speedometer2 text-danger"></i> Admin Dashboard</h1>
+            <p class="lead text-muted">System overview, analytics & management</p>
+        </div>
+        <div class="col-md-4 text-end">
+            <a asp-controller="Rooms" asp-action="Index" class="btn btn-outline-danger btn-lg rounded-pill px-4 shadow-sm hover-elevate">
+                <i class="bi bi-door-open-fill"></i> Manage Rooms
+            </a>
+        </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="row g-4 mb-5">
+        <div class="col-md-6 col-lg-4">
+            <div class="card border-0 text-white shadow-lg rounded-4 overflow-hidden h-100" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                <div class="card-body p-4 position-relative">
+                    <div class="position-absolute end-0 top-0 mt-4 me-4 opacity-25" style="font-size: 5rem; transform: rotate(-15deg);">
+                        <i class="bi bi-building"></i>
+                    </div>
+                    <h6 class="text-uppercase fw-bold opacity-75 mb-3 letter-spacing-1">Total Rooms</h6>
+                    <h2 class="display-3 fw-bolder mb-0">@ViewBag.TotalRooms</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-4">
+            <div class="card border-0 text-white shadow-lg rounded-4 overflow-hidden h-100" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
+                <div class="card-body p-4 position-relative">
+                    <div class="position-absolute end-0 top-0 mt-4 me-4 opacity-25" style="font-size: 5rem; transform: rotate(10deg);">
+                        <i class="bi bi-calendar-check"></i>
+                    </div>
+                    <h6 class="text-uppercase fw-bold opacity-75 mb-3">Total Reservations</h6>
+                    <h2 class="display-3 fw-bolder mb-0">@ViewBag.TotalBookings</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-4">
+            <div class="card border-0 text-white shadow-lg rounded-4 overflow-hidden h-100" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">
+                <div class="card-body p-4 position-relative">
+                    <div class="position-absolute end-0 top-0 mt-4 me-4 opacity-25" style="font-size: 5rem; transform: rotate(-5deg);">
+                        <i class="bi bi-hourglass-split"></i>
+                    </div>
+                    <h6 class="text-uppercase fw-bold opacity-75 mb-3">Pending Approvals</h6>
+                    <h2 class="display-3 fw-bolder mb-0">@ViewBag.PendingCount</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Section -->
+    <div class="row g-4 mb-5">
+        <div class="col-lg-7">
+            <div class="card shadow-sm border-0 rounded-4">
+                <div class="card-header bg-transparent border-0 p-4 pb-2">
+                    <h5 class="fw-bold mb-0"><i class="bi bi-bar-chart-fill text-primary me-2"></i> Bookings per Room</h5>
+                </div>
+                <div class="card-body p-4 pt-2">
+                    <canvas id="bookingsPerRoomChart" height="200"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-5">
+            <div class="card shadow-sm border-0 rounded-4">
+                <div class="card-header bg-transparent border-0 p-4 pb-2">
+                    <h5 class="fw-bold mb-0"><i class="bi bi-pie-chart-fill text-success me-2"></i> Status Distribution</h5>
+                </div>
+                <div class="card-body p-4 pt-2 d-flex justify-content-center">
+                    <div style="max-width: 280px; width: 100%;">
+                        <canvas id="statusChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bookings Table -->
+    <div class="card shadow-sm border-0 rounded-4 mb-5">
+        <div class="card-header bg-transparent border-bottom p-4 d-flex justify-content-between align-items-center">
+            <h4 class="mb-0 fw-bold"><i class="bi bi-list-columns-reverse text-danger me-2"></i> All System Bookings</h4>
+            <span class="badge bg-danger rounded-pill px-3 py-2 shadow-sm">Real-time</span>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light text-muted small text-uppercase fw-bold">
+                        <tr>
+                            <th class="ps-4 py-3">User</th>
+                            <th class="py-3">Room</th>
+                            <th class="py-3">Date</th>
+                            <th class="py-3">Time</th>
+                            <th class="py-3 text-center">Status</th>
+                            <th class="text-end pe-4 py-3">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            var isPast = item.Date < DateTime.Today || (item.Date == DateTime.Today && item.EndTime < DateTime.Now.TimeOfDay);
+                            <tr>
+                                <td class="ps-4 py-3">
+                                    <div class="d-flex align-items-center">
+                                        <div class="d-flex align-items-center justify-content-center rounded-circle fw-bold me-3"
+                                             style="width:40px;height:40px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;font-size:0.85rem;">
+                                            @(item.User?.FullName?.Substring(0, 1).ToUpper() ?? "U")
+                                        </div>
+                                        <div>
+                                            <div class="fw-bold">@item.User?.FullName</div>
+                                            <div class="small text-muted">@item.User?.Email</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="py-3">
+                                    <div class="fw-semibold">@item.Room?.RoomName</div>
+                                    <div class="small text-muted"><i class="bi bi-geo-alt"></i> @item.Room?.Location</div>
+                                </td>
+                                <td class="py-3 fw-medium">@item.Date.ToString("MMM dd, yyyy")</td>
+                                <td class="py-3">
+                                    <span class="badge bg-light text-dark border px-2 py-1">
+                                        @item.StartTime.ToString(@"hh\:mm") → @item.EndTime.ToString(@"hh\:mm")
+                                    </span>
+                                </td>
+                                <td class="py-3 text-center">
+                                    @if (isPast)
+                                    {
+                                        <span class="badge bg-secondary rounded-pill px-3 py-2"><i class="bi bi-check2-circle"></i> Done</span>
+                                    }
+                                    else if (item.Status == "Approved")
+                                    {
+                                        <span class="badge bg-success rounded-pill px-3 py-2"><i class="bi bi-check-circle-fill"></i> Approved</span>
+                                    }
+                                    else if (item.Status == "Rejected")
+                                    {
+                                        <span class="badge bg-danger rounded-pill px-3 py-2"><i class="bi bi-x-circle-fill"></i> Rejected</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-warning text-dark rounded-pill px-3 py-2"><i class="bi bi-hourglass-split"></i> Pending</span>
+                                    }
+                                </td>
+                                <td class="text-end pe-4 py-3">
+                                    @if (!isPast && item.Status == "Pending")
+                                    {
+                                        <div class="btn-group btn-group-sm" role="group">
+                                            <form asp-action="ApproveBooking" asp-route-id="@item.BookingId" method="post" class="d-inline">
+                                                @Html.AntiForgeryToken()
+                                                <button type="submit" class="btn btn-outline-success px-3 rounded-start-pill">
+                                                    <i class="bi bi-check-lg"></i> Approve
+                                                </button>
+                                            </form>
+                                            <form asp-action="RejectBooking" asp-route-id="@item.BookingId" method="post" class="d-inline">
+                                                @Html.AntiForgeryToken()
+                                                <button type="submit" class="btn btn-outline-danger px-3 rounded-end-pill">
+                                                    <i class="bi bi-x-lg"></i> Reject
+                                                </button>
+                                            </form>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted small">—</span>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            @if (!Model.Any())
+            {
+                <div class="text-center py-5">
+                    <div style="font-size: 5rem; opacity: 0.15;"><i class="bi bi-inbox-fill"></i></div>
+                    <h4 class="text-muted mt-3">No bookings yet</h4>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script>
+        // Bookings per Room - Bar Chart
+        const barCtx = document.getElementById('bookingsPerRoomChart').getContext('2d');
+        new Chart(barCtx, {
+            type: 'bar',
+            data: {
+                labels: @Html.Raw(ViewBag.ChartLabels),
+                datasets: [{
+                    label: 'Bookings',
+                    data: @Html.Raw(ViewBag.ChartData),
+                    backgroundColor: [
+                        'rgba(102, 126, 234, 0.8)',
+                        'rgba(240, 147, 251, 0.8)',
+                        'rgba(79, 172, 254, 0.8)',
+                        'rgba(67, 233, 123, 0.8)',
+                        'rgba(250, 112, 154, 0.8)',
+                        'rgba(161, 140, 209, 0.8)'
+                    ],
+                    borderRadius: 8,
+                    borderSkipped: false,
+                    barThickness: 40
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: { stepSize: 1, font: { family: 'Inter' } },
+                        grid: { color: 'rgba(0,0,0,0.05)' }
+                    },
+                    x: {
+                        ticks: { font: { family: 'Inter', weight: 600 } },
+                        grid: { display: false }
+                    }
+                }
+            }
+        });
+
+        // Status Distribution - Doughnut Chart
+        const doughnutCtx = document.getElementById('statusChart').getContext('2d');
+        new Chart(doughnutCtx, {
+            type: 'doughnut',
+            data: {
+                labels: @Html.Raw(ViewBag.StatusLabels),
+                datasets: [{
+                    data: @Html.Raw(ViewBag.StatusData),
+                    backgroundColor: [
+                        '#ffc107',
+                        '#198754',
+                        '#dc3545'
+                    ],
+                    borderWidth: 0,
+                    hoverOffset: 8
+                }]
+            },
+            options: {
+                responsive: true,
+                cutout: '65%',
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: { font: { family: 'Inter', weight: 600 }, padding: 16, usePointStyle: true, pointStyleWidth: 12 }
+                    }
+                }
+            }
+        });
+    </script>
+}
